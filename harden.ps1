@@ -1,12 +1,6 @@
 
 # ===== Variables Section Start =====
 $MaxPasswordAge = 60  # Maximum password age in days
-$MinPasswordAge    = 10   # minimum days a password must be used
-$MinPasswordLength = 10   # minimum length of passwords
-$PasswordHistory   = 20   # number of previous passwords remembered
-$LockoutThreshold  = 5    # bad logon attempts before lockout
-$LockoutDuration   = 10   # minutes an account remains locked
-$LockoutWindow     = 10   # minutes in which bad logons are counted
 # ===== Variables Section End =====
 
 # Check for admin rights and relaunch as admin if needed
@@ -107,25 +101,6 @@ function Account-Policies {
      Write-Host "`n--- Starting: Account Policies ---`n"
     Write-Host "Setting maximum password age to $MaxPasswordAge days..."
     net accounts /maxpwage:$MaxPasswordAge
-     Write-Host "`n--- Starting: Account Policies ---`n"
-
-    Write-Host "Setting minimum password age to $MinPasswordAge days..."
-    net accounts /minpwage:$MinPasswordAge
-
-    Write-Host "Setting minimum password length to $MinPasswordLength characters..."
-    net accounts /minpwlen:$MinPasswordLength
-
-    Write-Host "Setting password history to remember $PasswordHistory passwords..."
-    net accounts /uniquepw:$PasswordHistory
-
-    Write-Host "Setting lockout threshold to $LockoutThreshold bad logon attempts..."
-    net accounts /lockoutthreshold:$LockoutThreshold
-
-    Write-Host "Setting lockout duration to $LockoutDuration minutes..."
-    net accounts /lockoutduration:$LockoutDuration
-
-    Write-Host "Setting lockout window to $LockoutWindow minutes..."
-    net accounts /lockoutwindow:$LockoutWindow
 }
 
 function Local-Policies {
