@@ -60,7 +60,6 @@ function User-Auditing {
     # ...existing code...
     # Enumerate all local user accounts
     $localUsers = Get-LocalUser
-}
 
     foreach ($user in $localUsers) {
         # Skip built-in accounts
@@ -118,6 +117,7 @@ if ($answer -eq 'n' -or $answer -eq 'N') {
     }
 }
 
+}
 function Account-Policies {
     Write-Host "`n--- Starting: Account Policies ---`n"
      Write-Host "`n--- Starting: Account Policies ---`n"
@@ -195,6 +195,4 @@ function Application-Security-Settings {
 } while ($true)
 
 # Mason Addition
-# --- IGNORE ---
-# AAAAAAAAAAAA nhhbhbjhbhbhjbhjb 
-# l --- IGNORE ---
+
