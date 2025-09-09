@@ -4,6 +4,15 @@ $MaxPasswordAge = 60  # Maximum password age in days
 $TempPassword = '1CyberPatriot!' # Temporary password for user accounts
 # ===== Variables Section End =====
 
+# Color variables
+$HeaderColor = "Cyan"
+$PromptColor = "Yellow"
+$EmphasizedNameColor = "Green"
+$KeptLineColor = "DarkYellow"
+$RemovedLineColor = "Red"
+$WarningColor = "Red"
+# ===== Variables Section End =====
+
 # Check for admin rights and relaunch as admin if needed
 if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
     Write-Host "Script is not running as administrator. Relaunching as admin..."
