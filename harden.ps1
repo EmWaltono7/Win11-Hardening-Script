@@ -58,6 +58,28 @@ function Enable-Updates {
 function User-Auditing {
     Write-Host "`n--- Starting: User Auditing ---`n"
     # ...existing code...
+     # Disable and rename the built-in Guest account
+    Write-Host "Disabling and renaming the built-in Guest account..."
+    try {
+        Disable-LocalUser -Name "Guest"
+        Write-Host "Guest account has been disabled."
+
+        Rename-LocalUser -Name "Guest" -NewName "DisabledGuest"
+        Write-Host "Guest account has been renamed to 'DisabledGuest'."
+    } catch {
+        Write-Host "Failed to disable or rename the Guest account: $_"
+    }
+     # Disable and rename the built-in Administrator account
+    Write-Host "Disabling and renaming the built-in Administrator account..."
+    try {
+        Disable-LocalUser -Name "Administrator"
+        Write-Host "Administrator account has been disabled."
+
+        Rename-LocalUser -Name "Administrator" -NewName "SecAdminDisabled"
+        Write-Host "Administrator account has been renamed to 'SecAdminDisabled'."
+    } catch {
+        Write-Host "Failed to disable or rename the Administrator account: $_"
+    }
     # Enumerate all local user accounts
     $localUsers = Get-LocalUser
 
