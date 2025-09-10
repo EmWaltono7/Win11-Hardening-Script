@@ -100,11 +100,13 @@ function Document-System {
         Write-Warning "Failed to document running services: $($_.Exception.Message)"
     }
 
-    # Document installed features
+        # Document installed features
     $featuresFile = Join-Path -Path $docsFolder -ChildPath "features.txt"
     Write-Host "Documenting installed features to: $featuresFile"
     try {
-        Get-WindowsFeature | Where-Object { $_.Installed -eq $true } | Select-Object Name, DisplayName | Format-Table -AutoSize | Out-String | Set-Content -Path $featuresFile
+        # Use DISM to list installed features
+        $features = dism /online /get-features /format:table
+        $features | Out-String | Set-Content -Path $featuresFile
         Write-Host "Installed features documented successfully."
     } catch {
         Write-Warning "Failed to document installed features: $($_.Exception.Message)"
