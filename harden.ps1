@@ -161,6 +161,25 @@ function Uncategorized-OS-Settings {
 
 function Service-Auditing {
     Write-Host "`n--- Starting: Service Auditing ---`n"
+
+    # Define an array of services to disable
+    $servicesToDisable = @("RemoteRegistry", "Spooler", "Telnet", "SNMP", "Browser")
+
+    # Loop through each service and attempt to disable it
+    foreach ($service in $servicesToDisable) {
+        Write-Host "Disabling service: $service..."
+        try {
+            # Stop the service if it's running
+            Stop-Service -Name $service -Force -ErrorAction Stop
+            Write-Host "Stopped service: $service"
+
+            # Set the service startup type to Disabled
+            Set-Service -Name $service -StartupType Disabled
+            Write-Host "Disabled service: $service"
+        } catch {
+            Write-Host "Failed to disable service: $service - $_"
+        }
+    }
 }
 
 function OS-Updates {
