@@ -153,27 +153,31 @@ function User-Auditing {
     Write-Host "`n--- Starting: User Auditing ---`n" -ForegroundColor $HeaderColor
 
     # Disable and rename the built-in Guest account
-    Write-Host "Disabling and renaming the built-in Guest account..." -ForegroundColor $PromptColor
+    Write-Host "Checking for the built-in Guest account..." -ForegroundColor $PromptColor
     try {
+        $guestAccount = Get-LocalUser -Name "Guest" -ErrorAction Stop
+        Write-Host "Disabling and renaming the built-in Guest account..." -ForegroundColor $PromptColor
         Disable-LocalUser -Name "Guest"
         Write-Host "Guest account has been disabled." -ForegroundColor $EmphasizedNameColor
 
         Rename-LocalUser -Name "Guest" -NewName "DisabledGuest"
         Write-Host "Guest account has been renamed to 'DisabledGuest'." -ForegroundColor $EmphasizedNameColor
     } catch {
-        Write-Host "Failed to disable or rename the Guest account: $_" -ForegroundColor $WarningColor
+        Write-Host "Guest account not found or already renamed." -ForegroundColor $WarningColor
     }
 
     # Disable and rename the built-in Administrator account
-    Write-Host "Disabling and renaming the built-in Administrator account..." -ForegroundColor $PromptColor
+    Write-Host "Checking for the built-in Administrator account..." -ForegroundColor $PromptColor
     try {
+        $adminAccount = Get-LocalUser -Name "Administrator" -ErrorAction Stop
+        Write-Host "Disabling and renaming the built-in Administrator account..." -ForegroundColor $PromptColor
         Disable-LocalUser -Name "Administrator"
         Write-Host "Administrator account has been disabled." -ForegroundColor $EmphasizedNameColor
 
         Rename-LocalUser -Name "Administrator" -NewName "SecAdminDisabled"
         Write-Host "Administrator account has been renamed to 'SecAdminDisabled'." -ForegroundColor $EmphasizedNameColor
     } catch {
-        Write-Host "Failed to disable or rename the Administrator account: $_" -ForegroundColor $WarningColor
+        Write-Host "Administrator account not found or already renamed." -ForegroundColor $WarningColor
     }
 
     # Enumerate all local user accounts
