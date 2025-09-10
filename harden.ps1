@@ -18,10 +18,10 @@ if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
     exit
 }
 # Display the computer's hostname
-Write-Host "Computer Name: $env:COMPUTERNAME" -ForegroundColor $HeaderColor
+Write-Host "Computer Name: $env:COMPUTERNAME" -ForegroundColor $Cyan
 
 # Display the Windows version
-Write-Host "Windows Version:" -ForegroundColor $HeaderColor
+Write-Host "Windows Version:" -ForegroundColor $Cyan
 Get-ComputerInfo | Select-Object -Property WindowsProductName, WindowsVersion, OsHardwareAbstractionLayer
 Write-Host "Script Run Time: $(Get-Date)" -ForegroundColor $HeaderColor
 
