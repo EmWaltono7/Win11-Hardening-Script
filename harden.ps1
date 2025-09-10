@@ -317,32 +317,88 @@ function Application-Security-Settings {
     Write-Host "`n--- Starting: Application Security Settings ---`n"
 }
 
+# Define a list to track completed options
+$completedOptions = @()
+
 # Menu loop
 do {
     Write-Host "`nSelect an option:`n"
     for ($i = 0; $i -lt $menuOptions.Count; $i++) {
-        Write-Host "$($i + 1). $($menuOptions[$i])"
+        if ($completedOptions -contains $menuOptions[$i]) {
+            # Highlight completed options in green
+            Write-Host "$($i + 1). $($menuOptions[$i])" -ForegroundColor $EmphasizedNameColor
+        } else {
+            # Display incomplete options in default color
+            Write-Host "$($i + 1). $($menuOptions[$i])"
+        }
     }
 
     $selection = Read-Host "`nEnter the number of your choice"
 
     switch ($selection) {
-        "1"  { Document-System }
-        "2"  { Enable-Updates }
-        "3"  { User-Auditing }
-        "4"  { Account-Policies }
-        "5"  { Local-Policies }
-        "6"  { Defensive-Countermeasures }
-        "7"  { Uncategorized-OS-Settings }
-        "8"  { Service-Auditing }
-        "9"  { OS-Updates }
-        "10" { Application-Updates }
-        "11" { Prohibited-Files }
-        "12" { Unwanted-Software }
-        "13" { Malware }
-        "14" { Application-Security-Settings }
-        "15" { Write-Host "`nExiting..."; break menu }  # leave the do{} loop
-        default { Write-Host "`nInvalid selection. Please try again." }
+        "1"  { 
+            Document-System 
+            $completedOptions += $menuOptions[0]  # Mark as completed
+        }
+        "2"  { 
+            Enable-Updates 
+            $completedOptions += $menuOptions[1]  # Mark as completed
+        }
+        "3"  { 
+            User-Auditing 
+            $completedOptions += $menuOptions[2]  # Mark as completed
+        }
+        "4"  { 
+            Account-Policies 
+            $completedOptions += $menuOptions[3]  # Mark as completed
+        }
+        "5"  { 
+            Local-Policies 
+            $completedOptions += $menuOptions[4]  # Mark as completed
+        }
+        "6"  { 
+            Defensive-Countermeasures 
+            $completedOptions += $menuOptions[5]  # Mark as completed
+        }
+        "7"  { 
+            Uncategorized-OS-Settings 
+            $completedOptions += $menuOptions[6]  # Mark as completed
+        }
+        "8"  { 
+            Service-Auditing 
+            $completedOptions += $menuOptions[7]  # Mark as completed
+        }
+        "9"  { 
+            OS-Updates 
+            $completedOptions += $menuOptions[8]  # Mark as completed
+        }
+        "10" { 
+            Application-Updates 
+            $completedOptions += $menuOptions[9]  # Mark as completed
+        }
+        "11" { 
+            Prohibited-Files 
+            $completedOptions += $menuOptions[10]  # Mark as completed
+        }
+        "12" { 
+            Unwanted-Software 
+            $completedOptions += $menuOptions[11]  # Mark as completed
+        }
+        "13" { 
+            Malware 
+            $completedOptions += $menuOptions[12]  # Mark as completed
+        }
+        "14" { 
+            Application-Security-Settings 
+            $completedOptions += $menuOptions[13]  # Mark as completed
+        }
+        "15" { 
+            Write-Host "`nExiting..." 
+            break menu  # Exit the loop
+        }
+        default { 
+            Write-Host "`nInvalid selection. Please try again." -ForegroundColor $WarningColor
+        }
     }
 } while ($true)
 # End of script 
