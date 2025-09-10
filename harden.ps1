@@ -161,7 +161,7 @@ function Service-Auditing {
     Write-Host "`n--- Starting: Service Auditing ---`n"
 
     # Define the services to audit and disable
-    $servicesToAudit = @("RemoteRegistry", "Spooler", "Telnet", "SNMP", "Browser")
+    $servicesToAudit = @("RemoteRegistry", "Spooler", "SNMP", "Browser")
 
     # Display the current status of the services
     Write-Host "`nCurrent status of services:`n"
