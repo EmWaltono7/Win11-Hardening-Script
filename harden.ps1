@@ -193,6 +193,4 @@ function Application-Security-Settings {
         default { Write-Host "`nInvalid selection. Please try again." }
     }
 } while ($true)
-
-# Mason Addition
-
+# End of script 
