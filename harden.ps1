@@ -73,6 +73,20 @@ function Document-System {
 
     # Additional audit results can be added here
     Write-Host "Documentation process completed."
+# Get the current username
+$PUSER = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name.Split('\')[-1]
+
+# Define the folder path
+$docsFolder = "C:\Users\$PUSER\Desktop\DOCS"
+
+# Check if the folder exists
+if (-not (Test-Path -Path $docsFolder)) {
+    # Create the folder if it does not exist
+    Write-Host "Creating folder: $docsFolder"
+    New-Item -Path $docsFolder -ItemType Directory | Out-Null
+} else {
+    Write-Host "Folder already exists: $docsFolder"
+}
 }
 
 function Enable-Updates {
@@ -166,7 +180,6 @@ function User-Auditing {
 
 function Account-Policies {
     Write-Host "`n--- Starting: Account Policies ---`n"
-     Write-Host "`n--- Starting: Account Policies ---`n"
     Write-Host "Setting maximum password age to $MaxPasswordAge days..."
     net accounts /maxpwage:$MaxPasswordAge
 }
@@ -267,3 +280,4 @@ do {
 } while ($true)
 # End of script 
 #Changed
+# get the current username
