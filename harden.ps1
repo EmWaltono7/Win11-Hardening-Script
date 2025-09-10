@@ -1,16 +1,14 @@
-
 # ===== Variables Section Start =====
 $MaxPasswordAge = 60  # Maximum password age in days
 $TempPassword = '1CyberPatriot!' # Temporary password for user accounts
-# ===== Variables Section End =====
 
 # Color variables
-$HeaderColor = "Cyan"
-$PromptColor = "Yellow"
-$EmphasizedNameColor = "Green"
-$KeptLineColor = "DarkYellow"
-$RemovedLineColor = "Red"
-$WarningColor = "Red"
+$HeaderColor = "Cyan"            # Color for headers
+$PromptColor = "Yellow"          # Color for prompts
+$EmphasizedNameColor = "Green"   # Color for emphasized names
+$KeptLineColor = "DarkYellow"    # Color for kept lines
+$RemovedLineColor = "Red"        # Color for removed lines
+$WarningColor = "Red"            # Color for warnings
 # ===== Variables Section End =====
 
 # Check for admin rights and relaunch as admin if needed
@@ -162,22 +160,19 @@ function Uncategorized-OS-Settings {
 function Service-Auditing {
     Write-Host "`n--- Starting: Service Auditing ---`n"
 
-    # Define an array of services to disable
-    $servicesToDisable = @("RemoteRegistry", "Spooler", "Telnet", "SNMP", "Browser")
+    $services = @("RemoteRegistry", "Spooler", "Telnet", "SNMP", "Browser")
 
-    # Loop through each service and attempt to disable it
-    foreach ($service in $servicesToDisable) {
-        Write-Host "Disabling service: $service..."
+    foreach ($svc in $services) {
         try {
-            # Stop the service if it's running
-            Stop-Service -Name $service -Force -ErrorAction Stop
-            Write-Host "Stopped service: $service"
-
-            # Set the service startup type to Disabled
-            Set-Service -Name $service -StartupType Disabled
-            Write-Host "Disabled service: $service"
+            $service = Get-Service -Name $svc -ErrorAction Stop
+            if ($service.Status -ne "Stopped") {
+                Stop-Service -Name $svc -Force -ErrorAction Stop
+                Write-Host "Stopped $svc"
+            }
+            Set-Service -Name $svc -StartupType Disabled -ErrorAction Stop
+            Write-Host "$svc set to Disabled"
         } catch {
-            Write-Host "Failed to disable service: $service - $_"
+            Write-Warning "Could not modify $($svc): $($_.Exception.Message)"
         }
     }
 }
