@@ -3,12 +3,12 @@ $MaxPasswordAge = 60  # Maximum password age in days
 $TempPassword = '1CyberPatriot!' # Temporary password for user accounts
 
 # Color variables
-$HeaderColor = "Cyan"            # Color for headers
-$PromptColor = "Yellow"          # Color for prompts
-$EmphasizedNameColor = "Green"   # Color for emphasized names
-$KeptLineColor = "DarkYellow"    # Color for kept lines
-$RemovedLineColor = "Red"        # Color for removed lines
-$WarningColor = "Red"            # Color for warnings
+$Cyan = "Cyan"            # Color for headers
+$Yellow = "Yellow"          # Color for prompts
+$Green = "Green"   # Color for emphasized names
+$DarkYellow = "DarkYellow"    # Color for kept lines
+$Red = "Red"        # Color for removed lines
+$White = "White"            # Color for warnings
 # ===== Variables Section End =====
 
 # Check for admin rights and relaunch as admin if needed
@@ -189,7 +189,12 @@ function User-Auditing {
             continue
         }
 
-        Write-Host "Is '$($user.Name)' an Authorized User? [Y/n]:" -ForegroundColor $PromptColor
+        #Write-Host "Is '$($user.Name)' an Authorized User? [Y/n]:" -ForegroundColor $PromptColor
+         # Inline colored prompt using multiple segments (PS 5.1-safe)
+        Write-Host -NoNewline "Is " -ForegroundColor $White
+        Write-Host -NoNewline "$($user.Name)" -ForegroundColor $Yellow
+        Write-Host -NoNewline " an Authorized User? [Y/n] (default Y) " -ForegroundColor $White
+
         $answer = Read-Host
         try {
             # Set password to $TempPassword
