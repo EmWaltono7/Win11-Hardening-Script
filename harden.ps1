@@ -169,7 +169,7 @@ function User-Auditing {
     # Disable and rename the built-in Administrator account
     Write-Host "Checking for the built-in Administrator account..." -ForegroundColor $PromptColor
     try {
-        $adminAccount = Get-LocalUser -Name "Administrator" -ErrorAction Stop
+        Get-LocalUser -Name "Administrator" -ErrorAction Stop
         Write-Host "Disabling and renaming the built-in Administrator account..." -ForegroundColor $PromptColor
         Disable-LocalUser -Name "Administrator"
         Write-Host "Administrator account has been disabled." -ForegroundColor $EmphasizedNameColor
