@@ -274,10 +274,9 @@ do {
         "12" { Unwanted-Software }
         "13" { Malware }
         "14" { Application-Security-Settings }
-        "15" { Write-Host "`nExiting..."; break }
+        "15" { Write-Host "`nExiting..."; break menu }  # leave the do{} loop
         default { Write-Host "`nInvalid selection. Please try again." }
     }
 } while ($true)
 # End of script 
 #Changed
-# get the current username
