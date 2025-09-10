@@ -3,12 +3,12 @@ $MaxPasswordAge = 60  # Maximum password age in days
 $TempPassword = '1CyberPatriot!' # Temporary password for user accounts
 
 # Color variables
-$Cyan = "Cyan"            # Color for headers
-$Yellow = "Yellow"          # Color for prompts
-$Green = "Green"   # Color for emphasized names
-$DarkYellow = "DarkYellow"    # Color for kept lines
-$Red = "Red"        # Color for removed lines
-$White = "White"            # Color for warnings
+$HeaderColor = "Cyan"            # Color for headers
+$PromptColor = "Yellow"          # Color for prompts
+$EmphasizedNameColor = "Green"   # Color for emphasized names
+$KeptLineColor = "DarkYellow"    # Color for kept lines
+$RemovedLineColor = "Red"        # Color for removed lines
+$WarningColor = "Red"            # Color for warnings
 # ===== Variables Section End =====
 
 # Check for admin rights and relaunch as admin if needed
@@ -18,10 +18,10 @@ if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
     exit
 }
 # Display the computer's hostname
-Write-Host "Computer Name: $env:COMPUTERNAME" -ForegroundColor $Cyan
+Write-Host "Computer Name: $env:COMPUTERNAME" -ForegroundColor $HeaderColor
 
 # Display the Windows version
-Write-Host "Windows Version:" -ForegroundColor $Cyan
+Write-Host "Windows Version:" -ForegroundColor $HeaderColor
 Get-ComputerInfo | Select-Object -Property WindowsProductName, WindowsVersion, OsHardwareAbstractionLayer
 Write-Host "Script Run Time: $(Get-Date)" -ForegroundColor $HeaderColor
 
@@ -190,10 +190,10 @@ function User-Auditing {
         }
 
         #Write-Host "Is '$($user.Name)' an Authorized User? [Y/n]:" -ForegroundColor $PromptColor
-         # Inline colored prompt using multiple segments (PS 5.1-safe)
-        Write-Host -NoNewline "Is " -ForegroundColor $White
-        Write-Host -NoNewline "$($user.Name)" -ForegroundColor $Yellow
-        Write-Host -NoNewline " an Authorized User? [Y/n] (default Y) " -ForegroundColor $White
+        # Inline colored prompt using multiple segments (PS 5.1-safe)
+        Write-Host -NoNewline "Is " -ForegroundColor $EmphasizedNameColor
+        Write-Host -NoNewline "$($user.Name)" -ForegroundColor $PromptColor
+        Write-Host -NoNewline " an Authorized User? [Y/n] (default Y) " -ForegroundColor $EmphasizedNameColor
 
         $answer = Read-Host
         try {
