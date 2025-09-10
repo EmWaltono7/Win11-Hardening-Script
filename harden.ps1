@@ -160,28 +160,31 @@ function Uncategorized-OS-Settings {
 function Service-Auditing {
     Write-Host "`n--- Starting: Service Auditing ---`n"
 
-    $services = @(
-    "BTAGService", "bthserv", "Browser", "MapsBroker", "lfsvc", "IISADMIN", "irmon", "lltdsvc", 
-    "LxssManager", "FTPSVC", "MSiSCSI", "sshd", "PNRPsvc", "p2psvc", "p2pimsvc", "PNRPAutoReg", 
-    "Spooler", "wercplsupport", "RasAuto", "SessionEnv", "TermService", "UmRdpService", "RpcLocator", 
-    "RemoteRegistry", "RemoteAccess", "LanmanServer", "simptcp", "SNMP", "sacsvr", "SSDPSRV", 
-    "upnphost", "WMSvc", "WerSvc", "Wecsvc", "WMPNetworkSvc", "icssvc", "WpnService", "PushToInstall", 
-    "WinRM", "W3SVC", "XboxGipSvc", "XblAuthManager", "XblGameSave", "XboxNetApiSvc", "NetTcpPortSharing",
-    "DNS", "LPDsvc", "RasMan", "SNMPTRAP", "TlntSvr", "TapiSrv", "WebClient", "LanmanWorkstation"
-)
-    foreach ($svc in $services) {
+    # Define the services to audit and disable
+    $servicesToAudit = @("RemoteRegistry", "Spooler", "Telnet", "SNMP", "Browser")
+
+    # Display the current status of the services
+    Write-Host "`nCurrent status of services:`n"
+    Get-Service -Name $servicesToAudit -ErrorAction SilentlyContinue | Select-Object Name, Status, StartType | Format-Table -AutoSize
+
+    # Loop through each service and attempt to disable it
+    foreach ($service in $servicesToAudit) {
         try {
-            $service = Get-Service -Name $svc -ErrorAction Stop
-            if ($service.Status -ne "Stopped") {
-                Stop-Service -Name $svc -Force -ErrorAction Stop
-                Write-Host "Stopped $svc"
+            $svc = Get-Service -Name $service -ErrorAction Stop
+            if ($svc.Status -ne "Stopped") {
+                Stop-Service -Name $service -Force -ErrorAction Stop
+                Write-Host "Stopped service: $service"
             }
-            Set-Service -Name $svc -StartupType Disabled -ErrorAction Stop
-            Write-Host "$svc set to Disabled"
+            Set-Service -Name $service -StartupType Disabled -ErrorAction Stop
+            Write-Host "Disabled service: $service"
         } catch {
-            Write-Warning "Could not modify $($svc): $($_.Exception.Message)"
+            Write-Warning "Could not modify $service`: $($_.Exception.Message)"
         }
     }
+    
+    # Display the updated status of the services
+    Write-Host "`nUpdated status of services:`n"
+    Get-Service -Name $servicesToAudit -ErrorAction SilentlyContinue | Select-Object Name, Status, StartType | Format-Table -AutoSize
 }
 
 function OS-Updates {
@@ -209,7 +212,7 @@ function Application-Security-Settings {
 }
 
 # Menu loop
-:menu do {
+do {
     Write-Host "`nSelect an option:`n"
     for ($i = 0; $i -lt $menuOptions.Count; $i++) {
         Write-Host "$($i + 1). $($menuOptions[$i])"
@@ -232,7 +235,7 @@ function Application-Security-Settings {
         "12" { Unwanted-Software }
         "13" { Malware }
         "14" { Application-Security-Settings }
-        "15" { Write-Host "`nExiting..."; break menu }
+        "15" { Write-Host "`nExiting..."; break }
         default { Write-Host "`nInvalid selection. Please try again." }
     }
 } while ($true)
