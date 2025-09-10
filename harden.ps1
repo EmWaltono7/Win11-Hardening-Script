@@ -67,32 +67,33 @@ function User-Auditing {
             continue
         }
 
-$prompt = "Is '$($user.Name)' an Authorized User? [Y/n]: "
-$answer = Read-Host -Prompt $prompt
-try {
-    # Set password to $TempPassword
-    Set-LocalUser -Name $user.Name -Password (ConvertTo-SecureString $TempPassword -AsPlainText -Force)
-    Write-Host "Password for '$($user.Name)' reset to temporary value."
+        $prompt = "Is '$($user.Name)' an Authorized User? [Y/n]: "
+        $answer = Read-Host -Prompt $prompt
+        try {
+            # Set password to $TempPassword
+            Set-LocalUser -Name $user.Name -Password (ConvertTo-SecureString $TempPassword -AsPlainText -Force)
+            Write-Host "Password for '$($user.Name)' reset to temporary value."
 
-    # Require password change at next logon
-    net user $user.Name /logonpasswordchg:yes
-    Write-Host "User '$($user.Name)' must change password at next logon."
-} catch {
-    Write-Host "Failed to reset password for '$($user.Name)': $_"
-}
+            # Require password change at next logon
+            net user $user.Name /logonpasswordchg:yes
+            Write-Host "User '$($user.Name)' must change password at next logon."
+        } catch {
+            Write-Host "Failed to reset password for '$($user.Name)': $_"
+        }
 
-if ($answer -eq 'n' -or $answer -eq 'N') {
-    try {
-        Remove-LocalUser -Name $user.Name
-        Write-Host "Deleted user: $($user.Name)"
-    } catch {
-        Write-Host "Failed to delete user: $($user.Name) - $_"
+        if ($answer -eq 'n' -or $answer -eq 'N') {
+            try {
+                Remove-LocalUser -Name $user.Name
+                Write-Host "Deleted user: $($user.Name)"
+            } catch {
+                Write-Host "Failed to delete user: $($user.Name) - $_"
+            }
+        } else {
+            Write-Host "Kept user: $($user.Name)"
+        }
     }
-} else {
-    Write-Host "Kept user: $($user.Name)"
-}
 
-    # Enumerate all users in the Administrators group
+    # After all users have been processed, enumerate all users in the Administrators group
     $adminGroup = Get-LocalGroupMember -Group "Administrators"
 
     foreach ($admin in $adminGroup) {
@@ -117,7 +118,6 @@ if ($answer -eq 'n' -or $answer -eq 'N') {
     }
 }
 
-}
 function Account-Policies {
     Write-Host "`n--- Starting: Account Policies ---`n"
      Write-Host "`n--- Starting: Account Policies ---`n"
