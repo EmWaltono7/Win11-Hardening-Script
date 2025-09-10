@@ -150,32 +150,30 @@ function Enable-Updates {
 }
 
 function User-Auditing {
-    Write-Host "`n--- Starting: User Auditing ---`n" -ForegroundColor $HeaderColor
-
-    # Disable and rename the built-in Guest account
-    Write-Host "Disabling and renaming the built-in Guest account..." -ForegroundColor $PromptColor
+    Write-Host "`n--- Starting: User Auditing ---`n"
+    # ...existing code...
+     # Disable and rename the built-in Guest account
+    Write-Host "Disabling and renaming the built-in Guest account..."
     try {
         Disable-LocalUser -Name "Guest"
-        Write-Host "Guest account has been disabled." -ForegroundColor $EmphasizedNameColor
+        Write-Host "Guest account has been disabled."
 
         Rename-LocalUser -Name "Guest" -NewName "DisabledGuest"
-        Write-Host "Guest account has been renamed to 'DisabledGuest'." -ForegroundColor $EmphasizedNameColor
+        Write-Host "Guest account has been renamed to 'DisabledGuest'."
     } catch {
-        Write-Host "Failed to disable or rename the Guest account: $_" -ForegroundColor $WarningColor
+        Write-Host "Failed to disable or rename the Guest account: $_"
     }
-
-    # Disable and rename the built-in Administrator account
-    Write-Host "Disabling and renaming the built-in Administrator account..." -ForegroundColor $PromptColor
+     # Disable and rename the built-in Administrator account
+    Write-Host "Disabling and renaming the built-in Administrator account..."
     try {
         Disable-LocalUser -Name "Administrator"
-        Write-Host "Administrator account has been disabled." -ForegroundColor $EmphasizedNameColor
+        Write-Host "Administrator account has been disabled."
 
         Rename-LocalUser -Name "Administrator" -NewName "SecAdminDisabled"
-        Write-Host "Administrator account has been renamed to 'SecAdminDisabled'." -ForegroundColor $EmphasizedNameColor
+        Write-Host "Administrator account has been renamed to 'SecAdminDisabled'."
     } catch {
-        Write-Host "Failed to disable or rename the Administrator account: $_" -ForegroundColor $WarningColor
+        Write-Host "Failed to disable or rename the Administrator account: $_"
     }
-
     # Enumerate all local user accounts
     $localUsers = Get-LocalUser
 
@@ -186,28 +184,28 @@ function User-Auditing {
         }
 
         $prompt = "Is '$($user.Name)' an Authorized User? [Y/n]: "
-        $answer = Read-Host -Prompt $prompt -ForegroundColor $PromptColor
+        $answer = Read-Host -Prompt $prompt
         try {
             # Set password to $TempPassword
             Set-LocalUser -Name $user.Name -Password (ConvertTo-SecureString $TempPassword -AsPlainText -Force)
-            Write-Host "Password for '$($user.Name)' reset to temporary value." -ForegroundColor $EmphasizedNameColor
+            Write-Host "Password for '$($user.Name)' reset to temporary value."
 
             # Require password change at next logon
             net user $user.Name /logonpasswordchg:yes
-            Write-Host "User '$($user.Name)' must change password at next logon." -ForegroundColor $EmphasizedNameColor
+            Write-Host "User '$($user.Name)' must change password at next logon."
         } catch {
-            Write-Host "Failed to reset password for '$($user.Name)': $_" -ForegroundColor $WarningColor
+            Write-Host "Failed to reset password for '$($user.Name)': $_"
         }
 
         if ($answer -eq 'n' -or $answer -eq 'N') {
             try {
                 Remove-LocalUser -Name $user.Name
-                Write-Host "Deleted user: $($user.Name)" -ForegroundColor $RemovedLineColor
+                Write-Host "Deleted user: $($user.Name)"
             } catch {
-                Write-Host "Failed to delete user: $($user.Name) - $_" -ForegroundColor $WarningColor
+                Write-Host "Failed to delete user: $($user.Name) - $_"
             }
         } else {
-            Write-Host "Kept user: $($user.Name)" -ForegroundColor $KeptLineColor
+            Write-Host "Kept user: $($user.Name)"
         }
     }
 
@@ -221,17 +219,17 @@ function User-Auditing {
         }
 
         $prompt = "Is '$($admin.Name)' an Authorized Administrator? [Y/n]: "
-        $answer = Read-Host -Prompt $prompt -ForegroundColor $PromptColor
+        $answer = Read-Host -Prompt $prompt
 
         if ($answer -eq 'n' -or $answer -eq 'N') {
             try {
                 Remove-LocalGroupMember -Group "Administrators" -Member $admin.Name
-                Write-Host "Removed administrator: $($admin.Name)" -ForegroundColor $RemovedLineColor
+                Write-Host "Removed administrator: $($admin.Name)"
             } catch {
-                Write-Host "Failed to remove administrator: $($admin.Name) - $_" -ForegroundColor $WarningColor
+                Write-Host "Failed to remove administrator: $($admin.Name) - $_"
             }
         } else {
-            Write-Host "Kept administrator: $($admin.Name)" -ForegroundColor $KeptLineColor
+            Write-Host "Kept administrator: $($admin.Name)"
         }
     }
 }
