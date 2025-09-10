@@ -47,6 +47,32 @@ $menuOptions = @(
 # Define functions for each option
 function Document-System {
     Write-Host "`n--- Starting: Document the system ---`n"
+
+    # Detect the current user's desktop folder
+    $desktopFolder = [Environment]::GetFolderPath("Desktop")
+    $docsFolder = Join-Path -Path $desktopFolder -ChildPath "DOCS"
+
+    # Create the DOCS folder if it does not already exist
+    if (-not (Test-Path -Path $docsFolder)) {
+        Write-Host "Creating DOCS folder at: $docsFolder"
+        New-Item -Path $docsFolder -ItemType Directory | Out-Null
+    } else {
+        Write-Host "DOCS folder already exists at: $docsFolder"
+    }
+
+    # Begin documentation with a list of local users
+    $localUsersFile = Join-Path -Path $docsFolder -ChildPath "LocalUsers.txt"
+    Write-Host "Documenting local users to: $localUsersFile"
+
+    try {
+        Get-LocalUser | Select-Object Name, Enabled, LastLogon | Format-Table -AutoSize | Out-String | Set-Content -Path $localUsersFile
+        Write-Host "Local users documented successfully."
+    } catch {
+        Write-Warning "Failed to document local users: $($_.Exception.Message)"
+    }
+
+    # Additional audit results can be added here
+    Write-Host "Documentation process completed."
 }
 
 function Enable-Updates {
