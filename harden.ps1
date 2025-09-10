@@ -60,10 +60,9 @@ function Document-System {
         Write-Host "DOCS folder already exists at: $docsFolder"
     }
 
-    # Begin documentation with a list of local users
+    # Document local users
     $localUsersFile = Join-Path -Path $docsFolder -ChildPath "LocalUsers.txt"
     Write-Host "Documenting local users to: $localUsersFile"
-
     try {
         Get-LocalUser | Select-Object Name, Enabled, LastLogon | Format-Table -AutoSize | Out-String | Set-Content -Path $localUsersFile
         Write-Host "Local users documented successfully."
@@ -71,22 +70,77 @@ function Document-System {
         Write-Warning "Failed to document local users: $($_.Exception.Message)"
     }
 
-    # Additional audit results can be added here
+    # Document administrators
+    $administratorsFile = Join-Path -Path $docsFolder -ChildPath "administrators.txt"
+    Write-Host "Documenting administrators to: $administratorsFile"
+    try {
+        Get-LocalGroupMember -Group "Administrators" | Select-Object Name, ObjectClass | Format-Table -AutoSize | Out-String | Set-Content -Path $administratorsFile
+        Write-Host "Administrators documented successfully."
+    } catch {
+        Write-Warning "Failed to document administrators: $($_.Exception.Message)"
+    }
+
+    # Document installed programs
+    $programsFile = Join-Path -Path $docsFolder -ChildPath "programs.txt"
+    Write-Host "Documenting installed programs to: $programsFile"
+    try {
+        Get-WmiObject -Class Win32_Product | Select-Object Name, Version, Vendor | Format-Table -AutoSize | Out-String | Set-Content -Path $programsFile
+        Write-Host "Installed programs documented successfully."
+    } catch {
+        Write-Warning "Failed to document installed programs: $($_.Exception.Message)"
+    }
+
+    # Document running services
+    $servicesFile = Join-Path -Path $docsFolder -ChildPath "services.txt"
+    Write-Host "Documenting running services to: $servicesFile"
+    try {
+        Get-Service | Where-Object { $_.Status -eq "Running" } | Select-Object Name, DisplayName, StartType | Format-Table -AutoSize | Out-String | Set-Content -Path $servicesFile
+        Write-Host "Running services documented successfully."
+    } catch {
+        Write-Warning "Failed to document running services: $($_.Exception.Message)"
+    }
+
+    # Document installed features
+    $featuresFile = Join-Path -Path $docsFolder -ChildPath "features.txt"
+    Write-Host "Documenting installed features to: $featuresFile"
+    try {
+        Get-WindowsFeature | Where-Object { $_.Installed -eq $true } | Select-Object Name, DisplayName | Format-Table -AutoSize | Out-String | Set-Content -Path $featuresFile
+        Write-Host "Installed features documented successfully."
+    } catch {
+        Write-Warning "Failed to document installed features: $($_.Exception.Message)"
+    }
+
+    # Export security configuration
+    $seceditFile = Join-Path -Path $docsFolder -ChildPath "secedit-export.inf"
+    Write-Host "Exporting security configuration to: $seceditFile"
+    try {
+        secedit /export /cfg "$seceditFile" | Out-Null
+        Write-Host "Security configuration exported successfully."
+    } catch {
+        Write-Warning "Failed to export security configuration: $($_.Exception.Message)"
+    }
+
+    # Document Windows Defender preferences
+    $defenderFile = Join-Path -Path $docsFolder -ChildPath "defender.txt"
+    Write-Host "Documenting Windows Defender preferences to: $defenderFile"
+    try {
+        Get-MpPreference | Out-String | Set-Content -Path $defenderFile
+        Write-Host "Windows Defender preferences documented successfully."
+    } catch {
+        Write-Warning "Failed to document Windows Defender preferences: $($_.Exception.Message)"
+    }
+
+    # Document scheduled tasks
+    $tasksFile = Join-Path -Path $docsFolder -ChildPath "tasks.txt"
+    Write-Host "Documenting scheduled tasks to: $tasksFile"
+    try {
+        Get-ScheduledTask | Select-Object TaskName, State | Format-Table -AutoSize | Out-String | Set-Content -Path $tasksFile
+        Write-Host "Scheduled tasks documented successfully."
+    } catch {
+        Write-Warning "Failed to document scheduled tasks: $($_.Exception.Message)"
+    }
+
     Write-Host "Documentation process completed."
-# Get the current username
-$PUSER = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name.Split('\')[-1]
-
-# Define the folder path
-$docsFolder = "C:\Users\$PUSER\Desktop\DOCS"
-
-# Check if the folder exists
-if (-not (Test-Path -Path $docsFolder)) {
-    # Create the folder if it does not exist
-    Write-Host "Creating folder: $docsFolder"
-    New-Item -Path $docsFolder -ItemType Directory | Out-Null
-} else {
-    Write-Host "Folder already exists: $docsFolder"
-}
 }
 
 function Enable-Updates {
