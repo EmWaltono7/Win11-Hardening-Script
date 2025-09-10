@@ -13,17 +13,17 @@ $WarningColor = "Red"            # Color for warnings
 
 # Check for admin rights and relaunch as admin if needed
 if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
-    Write-Host "Script is not running as administrator. Relaunching as admin..."
+    Write-Host "Script is not running as administrator. Relaunching as admin..." -ForegroundColor $WarningColor
     Start-Process -FilePath "powershell.exe" -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
     exit
 }
 # Display the computer's hostname
-Write-Host "Computer Name: $env:COMPUTERNAME"
+Write-Host "Computer Name: $env:COMPUTERNAME" -ForegroundColor $HeaderColor
 
 # Display the Windows version
-Write-Host "Windows Version:"
+Write-Host "Windows Version:" -ForegroundColor $HeaderColor
 Get-ComputerInfo | Select-Object -Property WindowsProductName, WindowsVersion, OsHardwareAbstractionLayer
-Write-Host "Script Run Time: $(Get-Date)"
+Write-Host "Script Run Time: $(Get-Date)" -ForegroundColor $HeaderColor
 
 # Define menu options
 $menuOptions = @(
@@ -46,7 +46,7 @@ $menuOptions = @(
 
 # Define functions for each option
 function Document-System {
-    Write-Host "`n--- Starting: Document the system ---`n"
+    Write-Host "`n--- Starting: Document the system ---`n" -ForegroundColor $HeaderColor
 
     # Detect the current user's desktop folder
     $desktopFolder = [Environment]::GetFolderPath("Desktop")
@@ -54,96 +54,96 @@ function Document-System {
 
     # Create the DOCS folder if it does not already exist
     if (-not (Test-Path -Path $docsFolder)) {
-        Write-Host "Creating DOCS folder at: $docsFolder"
+        Write-Host "Creating DOCS folder at: $docsFolder" -ForegroundColor $EmphasizedNameColor
         New-Item -Path $docsFolder -ItemType Directory | Out-Null
     } else {
-        Write-Host "DOCS folder already exists at: $docsFolder"
+        Write-Host "DOCS folder already exists at: $docsFolder" -ForegroundColor $KeptLineColor
     }
 
     # Document local users
     $localUsersFile = Join-Path -Path $docsFolder -ChildPath "LocalUsers.txt"
-    Write-Host "Documenting local users to: $localUsersFile"
+    Write-Host "Documenting local users to: $localUsersFile" -ForegroundColor $PromptColor
     try {
         Get-LocalUser | Select-Object Name, Enabled, LastLogon | Format-Table -AutoSize | Out-String | Set-Content -Path $localUsersFile
-        Write-Host "Local users documented successfully."
+        Write-Host "Local users documented successfully." -ForegroundColor $EmphasizedNameColor
     } catch {
-        Write-Warning "Failed to document local users: $($_.Exception.Message)"
+        Write-Host "Failed to document local users: $($_.Exception.Message)" -ForegroundColor $WarningColor
     }
 
     # Document administrators
     $administratorsFile = Join-Path -Path $docsFolder -ChildPath "administrators.txt"
-    Write-Host "Documenting administrators to: $administratorsFile"
+    Write-Host "Documenting administrators to: $administratorsFile" -ForegroundColor $PromptColor
     try {
         Get-LocalGroupMember -Group "Administrators" | Select-Object Name, ObjectClass | Format-Table -AutoSize | Out-String | Set-Content -Path $administratorsFile
-        Write-Host "Administrators documented successfully."
+        Write-Host "Administrators documented successfully." -ForegroundColor $EmphasizedNameColor
     } catch {
-        Write-Warning "Failed to document administrators: $($_.Exception.Message)"
+        Write-Host "Failed to document administrators: $($_.Exception.Message)" -ForegroundColor $WarningColor
     }
 
     # Document installed programs
     $programsFile = Join-Path -Path $docsFolder -ChildPath "programs.txt"
-    Write-Host "Documenting installed programs to: $programsFile"
+    Write-Host "Documenting installed programs to: $programsFile" -ForegroundColor $PromptColor
     try {
         Get-WmiObject -Class Win32_Product | Select-Object Name, Version, Vendor | Format-Table -AutoSize | Out-String | Set-Content -Path $programsFile
-        Write-Host "Installed programs documented successfully."
+        Write-Host "Installed programs documented successfully." -ForegroundColor $EmphasizedNameColor
     } catch {
-        Write-Warning "Failed to document installed programs: $($_.Exception.Message)"
+        Write-Host "Failed to document installed programs: $($_.Exception.Message)" -ForegroundColor $WarningColor
     }
 
     # Document running services
     $servicesFile = Join-Path -Path $docsFolder -ChildPath "services.txt"
-    Write-Host "Documenting running services to: $servicesFile"
+    Write-Host "Documenting running services to: $servicesFile" -ForegroundColor $PromptColor
     try {
         Get-Service | Where-Object { $_.Status -eq "Running" } | Select-Object Name, DisplayName, StartType | Format-Table -AutoSize | Out-String | Set-Content -Path $servicesFile
-        Write-Host "Running services documented successfully."
+        Write-Host "Running services documented successfully." -ForegroundColor $EmphasizedNameColor
     } catch {
-        Write-Warning "Failed to document running services: $($_.Exception.Message)"
+        Write-Host "Failed to document running services: $($_.Exception.Message)" -ForegroundColor $WarningColor
     }
 
-        # Document installed features
+    # Document installed features
     $featuresFile = Join-Path -Path $docsFolder -ChildPath "features.txt"
-    Write-Host "Documenting installed features to: $featuresFile"
+    Write-Host "Documenting installed features to: $featuresFile" -ForegroundColor $PromptColor
     try {
-        # Use DISM to list installed features
         $features = dism /online /get-features /format:table
         $features | Out-String | Set-Content -Path $featuresFile
-        Write-Host "Installed features documented successfully."
+        Write-Host "Installed features documented successfully." -ForegroundColor $EmphasizedNameColor
     } catch {
-        Write-Warning "Failed to document installed features: $($_.Exception.Message)"
+        Write-Host "Failed to document installed features: $($_.Exception.Message)" -ForegroundColor $WarningColor
     }
 
     # Export security configuration
     $seceditFile = Join-Path -Path $docsFolder -ChildPath "secedit-export.inf"
-    Write-Host "Exporting security configuration to: $seceditFile"
+    Write-Host "Exporting security configuration to: $seceditFile" -ForegroundColor $PromptColor
     try {
         secedit /export /cfg "$seceditFile" | Out-Null
-        Write-Host "Security configuration exported successfully."
+        Write-Host "Security configuration exported successfully." -ForegroundColor $EmphasizedNameColor
     } catch {
-        Write-Warning "Failed to export security configuration: $($_.Exception.Message)"
+        Write-Host "Failed to export security configuration: $($_.Exception.Message)" -ForegroundColor $WarningColor
     }
 
     # Document Windows Defender preferences
     $defenderFile = Join-Path -Path $docsFolder -ChildPath "defender.txt"
-    Write-Host "Documenting Windows Defender preferences to: $defenderFile"
+    Write-Host "Documenting Windows Defender preferences to: $defenderFile" -ForegroundColor $PromptColor
     try {
         Get-MpPreference | Out-String | Set-Content -Path $defenderFile
-        Write-Host "Windows Defender preferences documented successfully."
+        Write-Host "Windows Defender preferences documented successfully." -ForegroundColor $EmphasizedNameColor
     } catch {
-        Write-Warning "Failed to document Windows Defender preferences: $($_.Exception.Message)"
+        Write-Host "Failed to document Windows Defender preferences: $($_.Exception.Message)" -ForegroundColor $WarningColor
     }
 
     # Document scheduled tasks
     $tasksFile = Join-Path -Path $docsFolder -ChildPath "tasks.txt"
-    Write-Host "Documenting scheduled tasks to: $tasksFile"
+    Write-Host "Documenting scheduled tasks to: $tasksFile" -ForegroundColor $PromptColor
     try {
         Get-ScheduledTask | Select-Object TaskName, State | Format-Table -AutoSize | Out-String | Set-Content -Path $tasksFile
-        Write-Host "Scheduled tasks documented successfully."
+        Write-Host "Scheduled tasks documented successfully." -ForegroundColor $EmphasizedNameColor
     } catch {
-        Write-Warning "Failed to document scheduled tasks: $($_.Exception.Message)"
+        Write-Host "Failed to document scheduled tasks: $($_.Exception.Message)" -ForegroundColor $WarningColor
     }
 
-    Write-Host "Documentation process completed."
+    Write-Host "Documentation process completed." -ForegroundColor $HeaderColor
 }
+
 
 function Enable-Updates {
     Write-Host "`n--- Starting: Enable updates ---`n"
