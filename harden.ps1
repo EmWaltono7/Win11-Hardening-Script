@@ -216,3 +216,4 @@ function Application-Security-Settings {
     }
 } while ($true)
 # End of script 
+#Changed
