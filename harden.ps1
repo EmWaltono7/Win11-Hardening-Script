@@ -244,8 +244,44 @@ function User-Auditing {
         }
     }
 }
+# Define paths for backup and modified policy files
+$backupFile = "C:\Windows\System32\secedit-backup.inf"
+$exportedPolicyFile = "C:\Windows\System32\secedit-export.inf"
+$modifiedPolicyFile = "C:\Windows\System32\secedit-modified.inf"
 
-function Account-Policies {
+# Step 1: Export the current local security policy
+Write-Host "Exporting current local security policy to: $exportedPolicyFile" -ForegroundColor $HeaderColor
+secedit /export /cfg $exportedPolicyFile | Out-Null
+
+# Step 2: Create a backup of the exported policy
+Write-Host "Creating a backup of the exported policy at: $backupFile" -ForegroundColor $EmphasizedNameColor
+Copy-Item -Path $exportedPolicyFile -Destination $backupFile -Force
+
+# Step 3: Modify the SeTakeOwnershipPrivilege assignment
+Write-Host "Modifying SeTakeOwnershipPrivilege to restrict it to Administrators group (S-1-5-32-544)" -ForegroundColor $PromptColor
+try {
+    (Get-Content -Path $exportedPolicyFile) -replace '(SeTakeOwnershipPrivilege\s*=\s*).*', 'SeTakeOwnershipPrivilege = *S-1-5-32-544' |
+        Set-Content -Path $modifiedPolicyFile
+    Write-Host "SeTakeOwnershipPrivilege modified successfully." -ForegroundColor $EmphasizedNameColor
+} catch {
+    Write-Host "Failed to modify SeTakeOwnershipPrivilege: $($_.Exception.Message)" -ForegroundColor $WarningColor
+    exit
+}
+
+# Step 4: Import the modified policy and overwrite the database
+Write-Host "Importing the modified policy and overwriting the security database" -ForegroundColor $HeaderColor
+try {
+    secedit /configure /db secedit.sdb /cfg $modifiedPolicyFile /overwrite | Out-Null
+    Write-Host "Policy imported successfully." -ForegroundColor $EmphasizedNameColor
+} catch {
+    Write-Host "Failed to import the modified policy: $($_.Exception.Message)" -ForegroundColor $WarningColor
+    exit
+}
+
+# Step 5: Refresh the policy
+Write-Host "Refreshing the security policy to apply changes" -ForegroundColor $HeaderColor
+gpupdate /force | Out-Null
+Write-Host "Security policy refreshed successfully." -ForegroundColor $EmphasizedNameColorfunction Account-Policies {
     Write-Host "`n--- Starting: Account Policies ---`n"
     Write-Host "Setting maximum password age to $MaxPasswordAge days..."
     net accounts /maxpwage:$MaxPasswordAge
